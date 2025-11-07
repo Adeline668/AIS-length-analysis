@@ -1,0 +1,29 @@
+function singleColResults = FUNC_singleNeuronStats2(neurxCol, n,fc)
+% 03/1/2015
+% INPUT: 
+%    neurxCol: column of numbers for antigen 2 (AnkG), 
+%    n = which neuron number
+% OUTPUT
+%    singleColResults = [n, meanCol, stdCol, maxCol, AUCCol]
+% NOTE:
+%    If additional analyses are added, AIS_process_2018.m will need
+%     to have the output to text file modified to add another column
+
+        ind = find(~isnan(neurxCol)); %find indices of ~NaN <---------------------------------
+        neurxColnumbers = neurxCol(ind); %save numbers excluding NaN 
+        meanLast30 = mean(neurxColnumbers((end-50):end)); % The average of the last 30
+        neurxColnumbers_m=movmean(neurxColnumbers,50);
+
+        ind2 = find(neurxColnumbers_m<meanLast30*fc);
+        ind2 = sort(ind2(ind2>100));
+        ind = ind(ind<min(ind2));
+        neurxColnumbers = neurxCol(ind); %save numbers excluding NaN 
+        meanCol = mean(neurxColnumbers); %find mean 
+        stdCol = std(neurxColnumbers); %find standard deviation 
+        maxCol = max(neurxColnumbers); %find max 
+        AUCCol = sum(neurxColnumbers); %find AUC (=sum) 
+        endNeur = max(ind); %index of the last ~NaN pixel 
+        
+        singleColResults = [n, meanCol, stdCol, maxCol, AUCCol, endNeur]; % output 
+
+end
